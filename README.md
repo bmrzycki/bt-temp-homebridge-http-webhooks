@@ -20,7 +20,7 @@ are explained in comments inside of `default.cfg`.
 ## Bluetooth devices
 Supported devices are the following:
 - [Govee H5075](https://www.amazon.com/dp/B0872X4H4J) - good ambient room monitor and when purchased in a 2-pack are quite affordable.
-- [Inkbird ISB-TH2](https://www.amazon.com/dp/B08S34C5X9) - smaller, magnetic, and water resistant make this a better option for monitoring refrigerators and freezers.
+- [Inkbird IBS-TH2](https://www.amazon.com/dp/B08S34C5X9) - smaller, magnetic, and water resistant make this a better option for monitoring refrigerators and freezers.
 
 All you need to setup monitoring is the MAC address of the device and
 can be found with the manufacturer's iOS/Android appliation or the
