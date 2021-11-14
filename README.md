@@ -22,9 +22,9 @@ Supported devices are the following:
 - [Govee H5075](https://www.amazon.com/dp/B0872X4H4J) - good ambient room monitor and when purchased in a 2-pack are quite affordable.
 - [Inkbird IBS-TH2](https://www.amazon.com/dp/B08S34C5X9) - smaller, magnetic, and water resistant make this a better option for monitoring refrigerators and freezers.
 
-All you need to setup monitoring is the MAC address of the device and
-can be found with the manufacturer's iOS/Android appliation or the
-Linux command `sudo hcitool lescan`.
+All you need to setup monitoring is the MAC address of the device. The
+MAC can be found with the included `btscan.py` utility or the Linux
+command `sudo hcitool lescan`.
 
 ## Homebridge setup
 The homebridge-http-webhooks plugin with `HTTP` access and no
