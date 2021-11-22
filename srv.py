@@ -16,6 +16,10 @@ from urllib.request import urlopen
 
 import bleson  # Developed using ver 0.1.8 from pip
 
+BATTERY = {
+    'id' : '',
+    'threshold' : 50,
+}
 GLOBAL = {
     'url_timeout' : 5.0,
     'interval'    : 60,
@@ -226,12 +230,17 @@ def update():
                 sleep(WEBHOOKS['delay'])
     # Don't need _BT_LOCK: the observer is stopped so thread callbacks
     # can't happen during this function.
+    batt = 100
     for mac in _BT:
         bt = _BT[mac]
         d = bt.data()
         if d:
             _u(bt.webhooks(), d)
+            batt = min(batt, d.get('b', 100))
         bt.reset()
+    if BATTERY['id'] and batt < BATTERY['threshold']:
+        whook({'accessoryId' : hooks[k], 'state' : 'true'})
+        sleep(WEBHOOKS['delay'])
 
 
 def observe(o):
@@ -270,6 +279,12 @@ def main(args_raw):
                                          fallback=GLOBAL['url_timeout'])
     GLOBAL['interval'] = cfg.getint('global', 'interval',
                                     fallback=GLOBAL['interval'])
+    BATTERY['id'] = cfg.get('battery', 'id',
+                            fallback=BATTERY['id'])
+    BATTERY['threshold'] = cfg.getint('battery', 'threshold',
+                                      fallback=BATTERY['threshold'])
+    if not 1 <= BATTERY['threshold'] <= 100:
+        p.error(f"Invalid battery threshold '{BATTERY['threshold']}'")
     WEBHOOKS['host'] = cfg.get('webhooks', 'host',
                                fallback=WEBHOOKS['host'])
     WEBHOOKS['port'] = cfg.getint('webhooks', 'port',
