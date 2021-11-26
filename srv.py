@@ -239,7 +239,7 @@ def update():
             batt = min(batt, d.get('b', 100))
         bt.reset()
     if BATTERY['id'] and batt < BATTERY['threshold']:
-        whook({'accessoryId' : hooks[k], 'state' : 'true'})
+        whook({'accessoryId' : BATTERY['id'], 'state' : 'true'})
         sleep(WEBHOOKS['delay'])
 
 
