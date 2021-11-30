@@ -42,8 +42,10 @@ class BTData():
         self.msg = ''
         self._data = {}
         self._webhook = {}
-        self._mac_valid()
-        self._model_valid()
+        if self.ok():  # Don't combine: any *valid() fn may change ok state
+            self._mac_valid()
+        if self.ok():
+            self._model_valid()
 
     def __repr__(self):
         return (f"BTData(mac='{self.mac}' model='{self.model}'"
@@ -116,7 +118,8 @@ class BTData():
                 return
 
     def _model_valid(self):
-        return f"_parse_{self.model}" in dir(self)
+        if f"_parse_{self.model}" not in dir(self):
+            self.msg = f"invalid model '{self.model}'"
 
     def _parse_gvh5075(self, ad):
         # The Govee H5075 advertises temperature and humidity inside its
