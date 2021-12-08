@@ -12,8 +12,8 @@ _MAXLEN_NAME = 0
 
 def _add(mac, model, ad):
     global _MAXLEN_NAME
+    _LOCK.acquire()
     try:
-        _LOCK.acquire()
         d = _BT.get(mac, { 'model' : model,
                            'batt'  : ad.mfg_data[-2],
                            'rssi'  : [] })
