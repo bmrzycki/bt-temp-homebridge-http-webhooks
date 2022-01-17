@@ -4,6 +4,7 @@ import argparse
 import syslog
 
 from configparser import ConfigParser
+from datetime import datetime, timezone
 from pathlib import Path
 from json import loads
 from signal import signal, SIGPIPE, SIG_DFL
@@ -21,9 +22,11 @@ BATTERY = {
     'threshold' : 50,
 }
 GLOBAL = {
+    'log'         : None,
     'url_timeout' : 5.0,
     'interval'    : 60,
 }
+LOG_HEADER = "#timestamp_utc,mac,model,name,temp_c,humidity%,battery%,rssi"
 VERBOSE = 0
 WEBHOOKS = {
     'host'  : '127.0.0.1',
@@ -225,6 +228,15 @@ def callback(ad):
         print(f"{bt.mac}  {s}")
 
 
+def log(bt, d):
+    if GLOBAL['log'] is not None:
+        name = d['name'].replace(',', '.')
+        model = bt.model.replace(',', '.')
+        ts = str(datetime.now(timezone.utc)).replace(' ', 'T', 1)
+        GLOBAL['log'].write(f"{ts},{bt.mac},{model},{name}," +
+                            f"{d['c']},{d['h']},{d['b']},{d['rssi']}\n")
+
+
 def update():
     def _u(hooks, data):
         for k in hooks:
@@ -238,12 +250,15 @@ def update():
         bt = _BT[mac]
         d = bt.data()
         if d:
+            log(bt, d)
             _u(bt.webhooks(), d)
             batt = min(batt, d.get('b', 100))
         bt.reset()
     if BATTERY['id'] and batt < BATTERY['threshold']:
         whook({'accessoryId' : BATTERY['id'], 'state' : 'true'})
         sleep(WEBHOOKS['delay'])
+    if GLOBAL['log'] is not None:
+        GLOBAL['log'].flush()
 
 
 def observe(o):
@@ -277,6 +292,15 @@ def main(args_raw):
         cfg.read_file(args.config)
     except Exception as e:
         p.error(str(e))
+
+    log_f = cfg.get('global', 'log', fallback='')
+    if log_f:
+        if Path(log_f).exists():
+            GLOBAL['log'] = open(log_f, 'a')
+            GLOBAL['log'].write("\n")  # ensure we start on a new line
+        else:
+            GLOBAL['log'] = open(log_f, 'w')
+            GLOBAL['log'].write(f"{LOG_HEADER}\n")
 
     GLOBAL['url_timeout'] = cfg.getfloat('global', 'url_timeout',
                                          fallback=GLOBAL['url_timeout'])
