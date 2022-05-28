@@ -131,7 +131,7 @@ def main(args_raw):
         for n in ('c', 'f', 'h', 'b', 'r'):
             tmp, tmp_len = sorted(d[n]), len(d[n])
             lo, hi, avg = tmp[0], tmp[-1], sum(tmp) / tmp_len
-            print(f"    {names[n]} : lo={lo} hi={hi} avg={avg}"
+            print(f"    {names[n]} : lo={lo} hi={hi} avg={avg:.02f}"
                   f" count={tmp_len}")
 
 
