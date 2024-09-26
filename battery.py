@@ -42,11 +42,15 @@ def main():
         }
 
     for row in cfile:
-        if not row:
+        if len(row) < 2:
             continue
         # date, mac, model, name, c_temp, humid, battery, rssi = row
-        data[row[1]]["date"] = row[0]
-        data[row[1]]["battery"] = int(row[6])
+        try:
+            data[row[1]]["date"] = row[0]
+            data[row[1]]["battery"] = int(row[6])
+        except:
+            print(row)
+            raise
     infile.close()
     show(data)
 
@@ -58,7 +62,10 @@ def show(data):
     # Place in a list of tuples to sort the final values
     final = []
     for mac, elem in data.items():
-        final.append([elem["battery"], elem["date"], mac])
+        if "battery" in elem:
+            final.append([elem["battery"], elem["date"], mac])
+        else:
+            print(f"warning: missing battery for {elem['name']}")
     for battery, date, mac in sorted(final):
         name = data[mac]["name"]
         if name.startswith("t_"):
