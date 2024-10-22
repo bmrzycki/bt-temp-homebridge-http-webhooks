@@ -42,8 +42,8 @@ def main():
         }
 
     for row in cfile:
-        if len(row) < 2:
-            continue
+        if len(row) < 2 or row[0].startswith("#"):
+            continue  # Ignore blank rows and the CSV header.
         # date, mac, model, name, c_temp, humid, battery, rssi = row
         try:
             data[row[1]]["date"] = row[0]
